@@ -46,7 +46,10 @@ public class QueryBuilders extends AbstractLesson {
 
     // First, we'll look at what the raw Document looks like
     Document onerousFilter = new Document("cast", "Salma Hayek");
-    Document actual = moviesCollection.find(onerousFilter).limit(1).iterator().tryNext();
+    Document actual = moviesCollection.find(onerousFilter)
+            .limit(1)
+            .iterator()
+            .tryNext();
 
     // Given what we know from the dataset
     String expectedTitle = "Roadracers";
@@ -122,7 +125,11 @@ public class QueryBuilders extends AbstractLesson {
         results.stream().map(movie -> (String) movie.get("title")).collect(Collectors.toSet());
     Assert.assertTrue(
         titles.containsAll(
-            Arrays.asList("Forrest Gump", "Toy Story", "Toy Story 2", "Saving Private Ryan")));
+            Arrays.asList(
+                    "Forrest Gump",
+                    "Toy Story",
+                    "Toy Story 2",
+                    "Saving Private Ryan")));
   }
 
   /**
