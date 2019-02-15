@@ -10,9 +10,13 @@ public class ActorWithStringId {
   private String id;
 
   private String name;
+
+  @BsonProperty("date_of_birth")
   private Date dateOfBirth;
 
   private List awards;
+
+  @BsonProperty("num_movies")
   private int numMovies;
 
   public ActorWithStringId() { // constructor

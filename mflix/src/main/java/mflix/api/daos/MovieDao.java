@@ -124,8 +124,7 @@ public class MovieDao extends AbstractMFlixDao {
   public List<Document> getMoviesByCountry(String... country) {
 
     Bson queryFilter = Filters.all("countries", Arrays.asList(country));
-//    Bson projection = Projections.fields(Projections.include("title"));
-    //TODO> Ticket: Projection - implement the query and projection required by the unit test
+    //DONE> Ticket: Projection - implement the query and projection required by the unit test
     List<Document> movies = new ArrayList<>();
     moviesCollection.find(queryFilter)
             .projection(fields(include("title")))
@@ -170,10 +169,9 @@ public class MovieDao extends AbstractMFlixDao {
    * @return List of documents sorted by sortKey that match the cast selector.
    */
   public List<Document> getMoviesByCast(String sortKey, int limit, int skip, String... cast) {
-    Bson castFilter = null;
-    Bson sort = null;
-    //TODO> Ticket: Subfield Text Search - implement the expected cast
-    // filter and sort
+    Bson castFilter = Filters.in("cast", cast);
+    Bson sort = Sorts.ascending(sortKey);
+    //DONE> Ticket: Subfield Text Search - implement the expected cast, filter and sort
     List<Document> movies = new ArrayList<>();
     moviesCollection
         .find(castFilter)
