@@ -45,10 +45,6 @@ public class UserTest extends TicketTest {
     this.testUser.setEmail(email);
     this.testUser.setHashedpw("somehashedpw");
     this.jwt = "somemagicjwt";
-    mongoClient
-        .getDatabase("mflix")
-        .getCollection("users")
-        .deleteOne(new Document("email", "log@out.com"));
   }
 
   @After
@@ -58,6 +54,7 @@ public class UserTest extends TicketTest {
     db.getCollection("users").deleteMany(new Document("email", "log@out.com"));
     db.getCollection("sessions").deleteMany(new Document("user_id", "log@out" +
             ".com"));
+    db.getCollection("sessions").deleteMany(new Document("user_id", "gryffindor@hogwarts.edu"));
   }
 
   @Test
