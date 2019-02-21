@@ -170,7 +170,7 @@ public class MovieDao extends AbstractMFlixDao {
    */
   public List<Document> getMoviesByCast(String sortKey, int limit, int skip, String... cast) {
     Bson castFilter = Filters.in("cast", cast);
-    Bson sort = Sorts.ascending(sortKey);
+    Bson sort = Sorts.descending(sortKey);
     //DONE> Ticket: Subfield Text Search - implement the expected cast, filter and sort
     List<Document> movies = new ArrayList<>();
     moviesCollection
@@ -200,7 +200,12 @@ public class MovieDao extends AbstractMFlixDao {
     List<Document> movies = new ArrayList<>();
     // TODO > Ticket: Paging - implement the necessary cursor methods to support simple
     // pagination like skip and limit in the code below
-    moviesCollection.find(castFilter).sort(sort).iterator()
+    moviesCollection
+            .find(castFilter)
+            .limit(limit)
+            .skip(skip)
+            .sort(sort)
+            .iterator()
     .forEachRemaining(movies::add);
     return movies;
   }
