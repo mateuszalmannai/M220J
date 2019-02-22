@@ -76,7 +76,7 @@ public class DeleteCommentTest extends TicketTest {
   public void testDeleteIncorrectCommentId(){
     String nonExistingCommentId = new ObjectId().toHexString();
     Assert.assertFalse(
-            "Deleting comment where _id is incorredct not return true",
+            "Deleting comment where _id is incorrect should not return true",
             dao.deleteComment(nonExistingCommentId, ownerEmail));
   }
 

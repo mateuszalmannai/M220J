@@ -65,7 +65,7 @@ public class MovieDao extends AbstractMFlixDao {
       return null;
     }
 
-    // TODO> Ticket: Get Comments - implement the lookup stage that allows the comments to
+    // DONE> Ticket: Get Comments - implement the lookup stage that allows the comments to
     // retrieved with Movies.
     List<Bson> pipelineWithOutBuilders = Arrays.asList(
             new Document("$match", new Document("_id", new ObjectId(movieId))),

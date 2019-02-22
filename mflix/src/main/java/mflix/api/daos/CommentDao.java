@@ -79,12 +79,17 @@ public class CommentDao extends AbstractMFlixDao {
    * returns the resulting Comment object.
    */
   public Comment addComment(Comment comment) {
+    if (comment.getId() == null || comment.getId().isEmpty()) {
+      throw new IncorrectDaoOperation("Comment objects need to have an ID field set.");
+    }
 
-    // TODO> Ticket - Update User reviews: implement the functionality that enables adding a new
+    // DONE> Ticket - Update User reviews: implement the functionality that enables adding a new
     // comment.
+    commentCollection.insertOne(comment);
     // TODO> Ticket - Handling Errors: Implement a try catch block to
     // handle a potential write exception when given a wrong commentId.
-    return null;
+
+    return comment;
   }
 
   /**
@@ -102,10 +107,25 @@ public class CommentDao extends AbstractMFlixDao {
    */
   public boolean updateComment(String commentId, String text, String email) {
 
-    // TODO> Ticket - Update User reviews: implement the functionality that enables updating an
+    // DONE> Ticket - Update User reviews: implement the functionality that enables updating an
     // user own comments
+    Bson filter = Filters.and(
+            Filters.eq("email", email),
+            Filters.eq("_id", new ObjectId(commentId)));
+    Bson update = Updates.combine(
+            Updates.set("text", text),
+            Updates.set("date", new Date()));
+    UpdateResult result = commentCollection.updateOne(filter, update);
+
+    if (result.getMatchedCount() > 0) {
+      if (result.getModifiedCount() != 1) {
+        log.warn("Comment `{}` text was not updated. Is it the same text?");
+      }
+      return true;
+    }
     // TODO> Ticket - Handling Errors: Implement a try catch block to
     // handle a potential write exception when given a wrong commentId.
+    log.error("Could not update comment `{}`. Make sure the comment is owned by `{}`", commentId, email);
     return false;
   }
 
@@ -117,12 +137,30 @@ public class CommentDao extends AbstractMFlixDao {
    * @return true if successful deletes the comment.
    */
   public boolean deleteComment(String commentId, String email) {
-    // TODO> Ticket Delete Comments - Implement the method that enables the deletion of a user
+    if (commentId == null || commentId.isEmpty()) {
+      throw new IllegalArgumentException("CommentID is required.");
+    }
+    // DONE> Ticket Delete Comments - Implement the method that enables the deletion of a user
     // comment
     // TIP: make sure to match only users that own the given commentId
+    Bson filter = Filters.and(
+            Filters.eq("_id", new ObjectId(commentId)),
+            Filters.eq("email", email)
+    );
+
+    DeleteResult res = commentCollection.deleteOne(filter);
+
+    // in case the delete count is different than one the document
+    // either does not exist or it does not match the email + _id filter.
+    if (res.getDeletedCount()!=1){
+      log.warn("Not able to delete comment `{}` for user `{}`. User" +
+                      " does not own comment or already deleted!",
+              commentId, email);
+      return false;
+    }
+    return true;
     // TODO> Ticket Handling Errors - Implement a try catch block to
     // handle a potential write exception when given a wrong commentId.
-    return false;
   }
 
   /**
