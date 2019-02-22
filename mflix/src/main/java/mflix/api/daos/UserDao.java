@@ -5,6 +5,7 @@ import com.mongodb.MongoWriteException;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.InsertOneOptions;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
@@ -60,8 +61,8 @@ public class UserDao extends AbstractMFlixDao {
    * @return True if successful, throw IncorrectDaoOperation otherwise
    */
   public boolean addUser(User user) {
-    //TODO > Ticket: Durable Writes -  you might want to use a more durable write concern here!
-    usersCollection.insertOne(user);
+    //DONE > Ticket: Durable Writes -  you might want to use a more durable write concern here!
+    usersCollection.withWriteConcern(WriteConcern.ACKNOWLEDGED.withW(1)).insertOne(user);
     return true;
     //TODO > Ticket: Handling Errors - make sure to only add new users
     // and not users that already exist.
