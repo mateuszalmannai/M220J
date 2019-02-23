@@ -36,10 +36,11 @@ public class Migrator {
       if (!"".equals(imdbRating)) {
         rating = Integer.valueOf(imdbRating);
       }
-      // TODO> Ticket: Migration - define the UpdateOneModel object for
+      // DONE> Ticket: Migration - define the UpdateOneModel object for
       // the rating type cleanup.
-      return new UpdateOneModel<Document>(new Document(), new
-      Document());
+      return new UpdateOneModel<>(
+              Filters.eq("_id", doc.getObjectId("_id")),
+              Updates.set("imdb.rating", rating));
     } catch (NumberFormatException e) {
       System.out.println(
           MessageFormat.format(
@@ -87,15 +88,15 @@ public class Migrator {
     System.out.println("Dataset cleanup migration");
 
     // set your MongoDB Cluster connection string
-    // TODO> Ticket: Migration - set the cluster connection string.
-    String mongoUri = "";
+    // DONE> Ticket: Migration - set the cluster connection string.
+    String mongoUri = "mongodb+srv://m220student:m220password@mflix-r9uwl.mongodb.net/test";
 
     // instantiate database and collection objects
     MongoDatabase mflix = MongoClients.create(mongoUri).getDatabase("mflix");
     MongoCollection<Document> movies = mflix.getCollection("movies");
-    Bson dateStringFilter = null;
-    String datePattern = "";
-    // TODO> Ticket: Migration - create a query filter that finds all
+    Bson dateStringFilter = Filters.type("lastupdated", "string");
+    String datePattern = "yyyy-MM-dd HH:mm:ss";
+    // DONE> Ticket: Migration - create a query filter that finds all
     // documents that are required to be updated and the correct date
     // format pattern
     Document queryFilter = new Document();
@@ -114,9 +115,9 @@ public class Migrator {
       }
     }
 
-    // TODO> Ticket: Migration - create a query filter that finds
+    // DONE> Ticket: Migration - create a query filter that finds
     // documents where `imdb.rating` is of type string
-    Bson ratingStringFilter = new Document();
+    Bson ratingStringFilter = Filters.type("imdb.rating", "string");
     for (Document doc : movies.find(ratingStringFilter)) {
       // Apply "imdb.rating" string to number conversion
       WriteModel<Document> updateRating = transformRating(doc);
@@ -126,8 +127,9 @@ public class Migrator {
     }
 
     // execute the bulk update
-    // TODO> Ticket: Migration - set the bulkWrite options
-    BulkWriteOptions bulkWriteOptions = null;
+    // DONE> Ticket: Migration - set the bulkWrite options
+    BulkWriteOptions bulkWriteOptions = new BulkWriteOptions();
+    bulkWriteOptions.ordered(false);
     if (bulkWrites.isEmpty()) {
       System.out.println("Nothing to update!");
       System.exit(0);
